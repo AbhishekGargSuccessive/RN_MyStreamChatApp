@@ -1,19 +1,21 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView, StyleSheet} from 'react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {Routes} from './app/routes/Routes';
 
 const App = () => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text>MyStreamChatApp</Text>
-    </View>
+    <GestureHandlerRootView style={styles.mainContainer}>
+      <SafeAreaView style={styles.mainContainer}>
+        <Routes />
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
+  mainContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignSelf: 'center',
   },
 });
 
