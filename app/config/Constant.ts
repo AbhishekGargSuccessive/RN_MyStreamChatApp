@@ -7,4 +7,5 @@ export const Constants = {
   chatUserImage:
     'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/1.jpg',
   ENTER_MESSAGE: 'Enter Message',
+  THREADS: 'Threads',
 };

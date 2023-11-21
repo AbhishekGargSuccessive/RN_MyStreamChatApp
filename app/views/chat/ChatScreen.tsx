@@ -2,7 +2,7 @@ import React from 'react';
 import {ChannelList, ChannelPreviewMessenger} from 'stream-chat-react-native';
 import {Channel} from 'stream-chat';
 import CustomHeader from '../../components/CustomerHeader';
-import {Text, View} from 'react-native';
+import {View} from 'react-native';
 
 interface ChatScreenProps {
   onSelect: (channel: Channel) => void;

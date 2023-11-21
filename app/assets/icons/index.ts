@@ -23,9 +23,6 @@ const styles = StyleSheet.create({
   delete: {
     height: 16,
     width: 16,
-    // justifyContent: 'space-between',
-    // flex: 1,
-    // alignItems: 'flex-end',
   },
 });
 
@@ -56,6 +53,10 @@ export const Icons = {
   },
   DELETE: {
     source: require('../icons/Delete.png'),
+    style: styles.delete,
+  },
+  CROSS: {
+    source: require('../icons/Cross.png'),
     style: styles.delete,
   },
 };

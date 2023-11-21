@@ -1,5 +1,4 @@
-import React from 'react';
-import {useChatContext} from '../../customHooks/ChatContext';
+import React, {useState} from 'react';
 import {
   Channel,
   MessageList,
@@ -7,12 +6,24 @@ import {
   useMessageInputContext,
   useMessageContext,
   AutoCompleteInput,
+  Thread,
+  MessageType,
+  ChannelList,
+  AutoCompleteSuggestionHeader,
 } from 'stream-chat-react-native';
 import CustomHeader from '../../components/CustomerHeader';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Icons} from '../../assets/icons';
 import {Constants} from '../../config/Constant';
 import Colors from '../../theme/Colors';
+
+interface ChatRoomProps {
+  thread: MessageType | null | undefined;
+  setThread: React.Dispatch<
+    React.SetStateAction<MessageType | null | undefined>
+  >;
+  currentChannel: any;
+}
 
 const StreamButton = () => {
   const {sendMessage, text, imageUploads, fileUploads} =
@@ -50,9 +61,9 @@ const CustomMessage = () => {
           <Text style={style.chatText}>{message?.text}</Text>
         </Text>
         <View style={style.flex} />
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <Image {...Icons.DELETE} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </>
   );
@@ -87,31 +98,98 @@ const CustomInput = () => {
   );
 };
 
-const ChatRoomScreen = () => {
-  const {currentChannel} = useChatContext();
+// const AutoCompleteSuggestionHeaderComponent = () => (
+//   <AutoCompleteSuggestionHeader triggerType="emoji" />
+// );
+
+// const CustomMessageStatus = () => {
+//   const {message} = useMessageContext();
+//   return <Text>{message.readBy}</Text>;
+// };
+// const MyNewComponent = (dateString: string) => (
+//   <Text>{`Hello World: ${dateString}`}</Text>
+// );
+
+const ChatRoomScreen = (props: ChatRoomProps) => {
+  const [channel, setChannel] = useState();
+
+  const onBackPress = () => {
+    if (props.thread) {
+      props.setThread(undefined);
+    } else if (!channel) {
+      setChannel(undefined);
+    }
+  };
+
   return (
     <View style={style.mainContainer}>
-      <CustomHeader
-        title={currentChannel?.data?.name}
-        enableImage={true}
-        // image={{uri: currentChannel?.data?.image}}
-        image={Icons.PLANHUB}
-      />
-      <Channel
-        channel={currentChannel}
-        disableTypingIndicator
-        enforceUniqueReaction
-        initialScrollToFirstUnreadMessage
-        MessageAvatar={CustomAvatar}
-        MessageSimple={CustomMessage}
-        Input={CustomInput}>
-        <MessageList />
-        <View style={style.upperMessageInput}>
-          <View style={style.messageInput}>
-            <MessageInput SendButton={StreamButton} />
+      {props.thread ? (
+        <View style={style.threadContainer}>
+          <View>
+            <Text style={style.threadText}>{Constants.THREADS}</Text>
+            <Text style={[style.chatText, style.threadCount]}>
+              0{props.thread?.reply_count} {Constants.THREADS}
+            </Text>
           </View>
+          <TouchableOpacity onPress={onBackPress} disabled={!channel}>
+            <Image {...Icons.CROSS} />
+          </TouchableOpacity>
         </View>
-      </Channel>
+      ) : (
+        <CustomHeader
+          title={props.currentChannel?.data?.name}
+          enableImage={true}
+          // image={{uri: props.currentChannel?.data?.image}}
+          image={Icons.PLANHUB}
+        />
+      )}
+      {!channel ? (
+        <Channel
+          // AutoCompleteSuggestionHeader={AutoCompleteSuggestionHeaderComponent}
+          // autoCompleteTriggerSettings={() => ({'/': ''})}
+          // MessageStatus={() => <CustomMessageStatus />}
+          // DateHeader={MyNewComponent}
+          // AutoCompleteSuggestionHeader={({queryText, triggerType}) => {
+          //   if (triggerType === 'command') {
+          //     return <Text>Command Header Component</Text>;
+          //   } else if (triggerType === 'emoji') {
+          //     return <Text>Emoji Header Component</Text>;
+          //   } else {
+          //     return (
+          //       <AutoCompleteSuggestionHeader
+          //         queryText={queryText}
+          //         triggerType={triggerType}
+          //       />
+          //     );
+          //   }
+          // }}
+          thread={props.thread}
+          threadList={!!props.thread}
+          channel={props.currentChannel}
+          disableTypingIndicator
+          enforceUniqueReaction
+          initialScrollToFirstUnreadMessage
+          MessageAvatar={CustomAvatar}
+          // MessageSimple={CustomMessage}
+          // Input={CustomInput}
+        >
+          {props.thread ? (
+            <Thread />
+          ) : (
+            <>
+              <MessageList onThreadSelect={props.setThread} />
+              {/* <View style={style.upperMessageInput}>
+                <View style={style.messageInput}>
+                  <MessageInput SendButton={StreamButton} />
+                </View>
+              </View> */}
+              <MessageInput SendButton={StreamButton} />
+            </>
+          )}
+        </Channel>
+      ) : (
+        <ChannelList onSelect={setChannel} />
+      )}
     </View>
   );
 };
@@ -166,5 +244,20 @@ const style = StyleSheet.create({
   },
   flex: {
     flex: 1,
+  },
+  threadText: {
+    fontWeight: '500',
+    fontSize: 16,
+    color: Colors.black,
+  },
+  threadContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderBottomWidth: 0.2,
+    borderBottomColor: Colors.jetGrey,
+  },
+  threadCount: {
+    color: Colors.granite,
   },
 });

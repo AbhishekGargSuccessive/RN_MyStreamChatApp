@@ -1,9 +1,11 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import ChatRoomScreen from '../views/chat/ChatRoomScreen';
 import {useChatContext} from '../customHooks/ChatContext';
+import {MessageType} from 'stream-chat-react-native';
 
 const ChatRoomViewModel = ({navigation}: any) => {
   const {currentChannel} = useChatContext();
+  const [thread, setThread] = useState<MessageType | null>();
 
   useEffect(() => {
     navigation.setOptions({
@@ -12,7 +14,7 @@ const ChatRoomViewModel = ({navigation}: any) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentChannel?.data?.name]);
 
-  return <ChatRoomScreen />;
+  return <ChatRoomScreen {...{currentChannel, thread, setThread}} />;
 };
 
 export default ChatRoomViewModel;
